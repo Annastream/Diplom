@@ -1,7 +1,4 @@
-import pytest
-from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
 from data import *
-# после установки булочка сохраняется в объекте бургера
 class TestBurger:
     def test_set_buns(self, burger, mock_bun):
         burger.set_buns(mock_bun)
@@ -40,17 +37,22 @@ class TestBurger:
         expected_price = BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE
         assert burger.get_price() == expected_price, f"Стоимость бургера {burger.get_price()} не соответствует ожидаемой {expected_price}"
 
-# тестирует формирование полного чека (Названий ингредиентов, типов ингредиентов (соус/начинка), итоговой стоимости)
-    def test_get_receipt(self, burger, mock_bun, mock_sauce, mock_filling):
+# тестирует формирование полного чека
         mock_bun.get_name.return_value = BUN_NAME_1
         mock_bun.get_price.return_value = BUN_PRICE
+        mock_sauce.get_type.return_value = "sauce"
+        mock_filling.get_type.return_value = "filling"
+
         burger.set_buns(mock_bun)
         burger.add_ingredient(mock_sauce)
         burger.add_ingredient(mock_filling)
-        receipt = burger.get_receipt()
-        assert all([
-            BUN_NAME_1 in receipt,
-            SAUCE_NAME in receipt,
-            FILLING_NAME in receipt,
-            f"Price: {BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE}" in receipt
-        ]), "Чек сформирован некорректно"
+
+        expected_receipt = (
+            f"(==== {BUN_NAME_1} ====)\n"
+            f"= sauce {SAUCE_NAME} =\n"
+            f"= filling {FILLING_NAME} =\n"
+            f"(==== {BUN_NAME_1} ====)\n"
+            f"\nPrice: {BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE}"
+        )
+
+        assert burger.get_receipt() == expected_receipt, "Чек сформирован некорректно"

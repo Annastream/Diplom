@@ -4,7 +4,6 @@ from praktikum.burger import Burger
 from praktikum.bun import Bun
 from praktikum.database import Database
 from praktikum.ingredient import Ingredient
-from praktikum.ingredient_types import *
 from data import *
 
 @pytest.fixture
@@ -27,7 +26,6 @@ def ingredient_filling():
 def database():
     return Database()
 
-# Моки для изолированного тестирования
 @pytest.fixture
 def mock_bun():
     mock = Mock(spec=Bun)
@@ -35,18 +33,16 @@ def mock_bun():
     mock.get_price.return_value = BUN_PRICE
     return mock
 
-
-
 @pytest.fixture
 def mock_sauce():
-    return create_mock_ingredient(SAUCE_NAME, SAUCE_PRICE)
+    mock = Mock(spec=Ingredient)
+    mock.get_name.return_value = SAUCE_NAME
+    mock.get_price.return_value = SAUCE_PRICE
+    return mock
 
 @pytest.fixture
 def mock_filling():
-    return create_mock_ingredient(FILLING_NAME, FILLING_PRICE)
-
-def create_mock_ingredient(name, price):
     mock = Mock(spec=Ingredient)
-    mock.get_name.return_value = name
-    mock.get_price.return_value = price
+    mock.get_name.return_value = FILLING_NAME
+    mock.get_price.return_value = FILLING_PRICE
     return mock
