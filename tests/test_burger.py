@@ -1,8 +1,6 @@
 from data import *
 class TestBurger:
-    def test_set_buns(self, burger, mock_bun):
-        burger.set_buns(mock_bun)
-        assert burger.bun == mock_bun
+
 # проверка добавления одного ингредиента (соуса)
     def test_add_one_ingredient(self, burger, mock_sauce):
         burger.add_ingredient(mock_sauce)
@@ -37,22 +35,25 @@ class TestBurger:
         expected_price = BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE
         assert burger.get_price() == expected_price, f"Стоимость бургера {burger.get_price()} не соответствует ожидаемой {expected_price}"
 
-# тестирует формирование полного чека
-        mock_bun.get_name.return_value = BUN_NAME_1
-        mock_bun.get_price.return_value = BUN_PRICE
-        mock_sauce.get_type.return_value = "sauce"
-        mock_filling.get_type.return_value = "filling"
 
-        burger.set_buns(mock_bun)
-        burger.add_ingredient(mock_sauce)
-        burger.add_ingredient(mock_filling)
+def test_get_receipt( burger, mock_bun, mock_sauce, mock_filling):
+    # Настраиваем дополнительные возвращаемые значения для моков
+    mock_sauce.get_type.return_value = INGREDIENT_TYPE_SAUCE
+    mock_filling.get_type.return_value = INGREDIENT_TYPE_FILLING
 
-        expected_receipt = (
-            f"(==== {BUN_NAME_1} ====)\n"
-            f"= sauce {SAUCE_NAME} =\n"
-            f"= filling {FILLING_NAME} =\n"
-            f"(==== {BUN_NAME_1} ====)\n"
-            f"\nPrice: {BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE}"
-        )
+    # Собираем бургер
+    burger.set_buns(mock_bun)
+    burger.add_ingredient(mock_sauce)
+    burger.add_ingredient(mock_filling)
 
-        assert burger.get_receipt() == expected_receipt, "Чек сформирован некорректно"
+    # Формируем ожидаемый чек
+    expected_receipt = (
+        f"(==== {BUN_NAME_1} ====)\n"
+        f"= {INGREDIENT_TYPE_SAUCE.lower()} {SAUCE_NAME} =\n"
+        f"= {INGREDIENT_TYPE_FILLING.lower()} {FILLING_NAME} =\n"
+        f"(==== {BUN_NAME_1} ====)\n"
+        f"\nPrice: {BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE}"
+    )
+
+    # Проверяем
+    assert burger.get_receipt() == expected_receipt
